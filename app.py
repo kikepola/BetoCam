@@ -1,11 +1,14 @@
 import cv2 
 import sys
 import time
+from ftplib import FTP 
+import os
+import fileinput
+import datetime
+from urllib import request, parse
+import json
 
-def send_message_to_slack(text):
-    from urllib import request, parse
-    import json
- 
+def send_message_to_slack(text):    
     post = {"text": "{0}".format(text)}
  
     try:
@@ -17,10 +20,23 @@ def send_message_to_slack(text):
     except Exception as em:
         print("EXCEPTION: " + str(em))
 
+def send_image_to_dash():
+    ftp = FTP()
+    ftp.set_debuglevel(2)
+    ftp.connect('files.000webhost.com', 21) 
+    ftp.login('saltless-tubes','face1223')
+    localfile = 'frame.jpg'
+    ftp.cwd('public_html')
+    fp = open(localfile, 'rb')
+    print('STOR %s' % os.path.basename(localfile))
+    ftp.storbinary('STOR %s' % os.path.basename(localfile), fp, 1024)
+    fp.close()
+    ftp.quit()
+
 
 faceCascade = cv2.CascadeClassifier('./haarcascade_frontalface_default.xml')
 eyeCascade = cv2.CascadeClassifier('./haarcascade_eye.xml')
-
+start_now = datetime.datetime.now()  
 video_capture = cv2.VideoCapture(0)
 
 while True:
@@ -48,9 +64,15 @@ while True:
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
         for (x, y, w, h) in eye:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
-            cv2.imwrite("frame.jpg", frame)      
-            send_message_to_slack('Sua casa esta sendo invadida')  
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)            
+            now = datetime.datetime.now() 
+            if(start_now + datetime.timedelta(minutes = 1) <= now):
+                send_image_to_dash()
+                send_message_to_slack('Sua casa esta sendo invadida')
+                cv2.imwrite("frame.jpg", frame)   
+                start_now = now
+                break
+              
              
 
     cv2.imshow('Video', frame)  
