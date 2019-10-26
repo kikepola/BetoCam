@@ -39,6 +39,7 @@ eyeCascade = cv2.CascadeClassifier('./haarcascade_eye.xml')
 start_now = datetime.datetime.now()  
 video_capture = cv2.VideoCapture(0)
 
+
 while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
@@ -67,9 +68,9 @@ while True:
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)            
             now = datetime.datetime.now() 
             if(start_now + datetime.timedelta(minutes = 1) <= now):
+                cv2.imwrite("frame.jpg", frame)  
                 send_image_to_dash()
-                send_message_to_slack('Sua casa esta sendo invadida')
-                cv2.imwrite("frame.jpg", frame)   
+                send_message_to_slack('Sua casa esta sendo invadida')             
                 start_now = now
                 break
               
