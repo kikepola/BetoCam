@@ -2,7 +2,7 @@
 
 ![alt text](https://github.com/kikepola/face_rec_rasp/blob/master/image.jpg)
 
-![alt text](https://raw.githubusercontent.com/kikepola/face_rec_rasp/master/site.png)
+![alt text](https://github.com/kikepola/face_rec_rasp/blob/master/site.png)
 
 
 
